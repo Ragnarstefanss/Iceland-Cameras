@@ -3,6 +3,8 @@ package is.ru.google_maps_test;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
