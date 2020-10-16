@@ -2,6 +2,7 @@ package is.ru.google_maps_test;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -11,11 +12,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    Map<String, String> mMarkerMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +32,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
+
+
 
     /**
      * Manipulates the map once available.
@@ -42,7 +50,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng reykjavik = new LatLng(64, -21);
-        mMap.addMarker(new MarkerOptions().position(reykjavik).title("Marker in Sydney"));
+        mMap.addMarker(new MarkerOptions().position(reykjavik).title("Reykjavík"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(reykjavik));
-    }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent intent = new Intent(getApplicationContext(), WebView_camera.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
+    } //END OF  public void onMapReady(GoogleMap googleMap)
 }

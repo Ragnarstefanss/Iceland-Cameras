@@ -16,7 +16,9 @@ public class WebView_camera extends AppCompatActivity {
         setContentView(R.layout.activity_web_view_camera);
         webView = (WebView) findViewById(R.id.webview);
         webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl("http://www.google.com");
+
+        webView.loadUrl("https://www.livefromiceland.is/webcams/reykjavikurtjorn/");
+
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
     }
