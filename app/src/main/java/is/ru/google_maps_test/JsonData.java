@@ -131,9 +131,16 @@ public class JsonData extends AppCompatActivity {
 
                     JSONObject results_filtered = result_array.getJSONObject(i);
                     String id = results_filtered.getString("id");
+                    String uid = results_filtered.getString("uid");
                     String type = results_filtered.getString("type");
                     String href = results_filtered.getString("href");
-
+                    String tags = results_filtered.getString("tags");
+                    String first_publication_date = results_filtered.getString("first_publication_date");
+                    String last_publication_date = results_filtered.getString("last_publication_date");
+                    String slugs = results_filtered.getString("slugs");
+                    String linked_documents = results_filtered.getString("linked_documents");
+                    String lang = results_filtered.getString("lang");
+                    String alternate_languages = results_filtered.getString("alternate_languages");
 
                     // data node is JSON Object
                     JSONObject data_filtered = results_filtered.getJSONObject("data");
