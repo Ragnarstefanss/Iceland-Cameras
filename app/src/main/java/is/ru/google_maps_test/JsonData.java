@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +24,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.BreakIterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 import javax.net.ssl.HttpsURLConnection;
@@ -29,6 +35,8 @@ public class JsonData extends AppCompatActivity {
     Button btnHit;
     TextView txtJson;
     ProgressDialog pd;
+
+    ArrayList<HashMap<String, String>> resultsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +52,7 @@ public class JsonData extends AppCompatActivity {
         btnHit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JsonTask().execute("https://forbes400.herokuapp.com/api/forbes400?limit=10");
+                new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X4rX7xAAACAA_8Ip&pageSize=100#format=json");
             }
         });
     }
@@ -114,8 +122,56 @@ public class JsonData extends AppCompatActivity {
             if (pd.isShowing()){
                 pd.dismiss();
             }
-            txtJson.setText(result);
+
+            try {
+                JSONObject jsonObj = new JSONObject(result);;
+                JSONArray result_array = jsonObj.getJSONArray("results");
+
+                for(int i=0; i < result_array.length(); i++){
+
+                    JSONObject results_filtered = result_array.getJSONObject(i);
+                    String id = results_filtered.getString("id");
+                    String type = results_filtered.getString("type");
+                    String href = results_filtered.getString("href");
+
+
+                    // data node is JSON Object
+                    JSONObject data_filtered = results_filtered.getJSONObject("data");
+                    String data_name = data_filtered.getString("name");
+                    String data_url = data_filtered.getString("url");
+                    String data_category = data_filtered.getString("category");
+                    String data_provider = data_filtered.getString("provider");
+                    String data_photovideo = data_filtered.getString("photovideo");
+                    String data_lat = data_filtered.getString("lat");
+                    String data_long = data_filtered.getString("long");
+
+                    txtJson.setText(data_name);
+
+
+                    // tmp hash map for single camera feed
+                    //HashMap<String, String> camera_feed = new HashMap<>();
+                    // add each child node to Hashmap key => value
+                    //camera_feed.put("id", id);
+                    //camera_feed.put("type", type);
+                    //camera_feed.put("data_url", data_url);
+                    //camera_feed.put("", );
+                    //camera_feed.put("", );
+                    //camera_feed.put("", );
+                    //camera_feed.put("", );
+                    //resultsList.add(camera_feed);
+                }
+
+                //txtJson = (TextView) findViewById(R.id.textView);
+                //HashMap<String, String> hashDetails = resultsList.get(0);
+                //txtJson.setText(hashDetails.get("id"));
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
+
     }
 }
 
