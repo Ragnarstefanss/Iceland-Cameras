@@ -8,18 +8,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/Theme.Googlemapstest">
+        android:theme="@style/Theme.Googlemapstest"
+        android:usesCleartextTraffic="true">
 
-        <activity
-            android:name=".WebView_camera"
-            android:label="WebView">
-
-        </activity>
-
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
+        <activity android:name=".JsonData"
+            android:label="jsonView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,12 +20,21 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".WebView_camera"
+            android:label="WebView"></activity>
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps">
+
+        </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
     </application>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 </manifest>

@@ -33,7 +33,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
+    /*
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        for (DataSnapshot s : dataSnapshot.getChildren()){
+            Venue venue = s.getValue(Venue.class);
 
+            venueList.add(venue);
+            for (int i = 0; i < venueList.size(); i++)
+            {
+                LatLng latLng = new LatLng(venue.venueLat,venue.venueLong);
+                if (mMap != null) {
+                    marker = mMap.addMarker(new MarkerOptions()
+                            .position(latLng).title(venue.venueName));
+                    //Added:
+                    mMarkerMap.put(marker.getId(), venue.getVenueId());
+                }
+            }
+        }
+    }*/
 
     /**
      * Manipulates the map once available.
@@ -56,7 +74,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                //String placeID = mMarkerMap.get(marker.getId());
+                //String placeName = marker.getTitle();
                 Intent intent = new Intent(getApplicationContext(), WebView_camera.class);
+                //intent.putExtra(PLACE_NAME, placeName);
+                //intent.putExtra(PLACE_ID, placeID);
                 startActivity(intent);
                 return false;
             }
