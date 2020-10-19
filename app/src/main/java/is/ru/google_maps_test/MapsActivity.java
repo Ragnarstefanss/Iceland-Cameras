@@ -1,9 +1,18 @@
 package is.ru.google_maps_test;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -39,6 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
     ArrayList<HashMap<String, String>> resultsList;
+    private LocationManager locationManager;
 
     //Intent intent = getIntent();
     //String str = intent.getStringExtra("message");
@@ -55,6 +66,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                      int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    double latidute = location.getLatitude();
+                    double longidite = location.getLongitude();
+                    LatLng latLng = new LatLng(latidute,longidite);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+
+                    try {
+                        List<Address> addressList = geocoder.getFromLocation(latidute, longidite,1);
+                        String str = addressList.get(0).getCountryName();
+                        mMap.addMarker(new MarkerOptions().position(latLng).title("Own location"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((latLng), 5.2f));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        } else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    double latidute = location.getLatitude();
+                    double longidite = location.getLongitude();
+                    LatLng latLng = new LatLng(latidute,longidite);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+
+                    try {
+                        List<Address > addressList = geocoder.getFromLocation(latidute, longidite,1);
+                        String str = addressList.get(0).getCountryName();
+                        mMap.addMarker(new MarkerOptions().position(latLng).title("Own location"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((latLng), 5.2f));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            });
+        }
+
 
     }
 
