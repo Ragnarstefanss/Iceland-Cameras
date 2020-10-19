@@ -16,12 +16,12 @@
             android:layout_height="182dp"
             android:text="TextView" />
 
-        <Button
+        <!--<Button
             android:id="@+id/btnHit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button" />
-
+        -->
     </LinearLayout>
 
 </RelativeLayout>

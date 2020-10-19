@@ -2,6 +2,7 @@ package is.ru.google_maps_test;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,15 +47,11 @@ public class JsonData extends AppCompatActivity {
         //final TextView helloTextView = (TextView) findViewById(R.id.textView);
         //helloTextView.setText(getJSON(url));
 
-        btnHit = (Button) findViewById(R.id.btnHit);
+        //btnHit = (Button) findViewById(R.id.btnHit);
         txtJson = (TextView) findViewById(R.id.textView);
+        resultsList = new ArrayList<>();
 
-        btnHit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X4rX7xAAACAA_8Ip&pageSize=100#format=json");
-            }
-        });
+        new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X4rX7xAAACAA_8Ip&pageSize=100#format=json");
     }
 
 
@@ -153,25 +150,22 @@ public class JsonData extends AppCompatActivity {
                     String data_long = data_filtered.getString("long");
 
                     txtJson.setText(data_name);
-
-
                     // tmp hash map for single camera feed
-                    //HashMap<String, String> camera_feed = new HashMap<>();
+                    HashMap<String, String> camera_feed = new HashMap<>();
                     // add each child node to Hashmap key => value
-                    //camera_feed.put("id", id);
+                    camera_feed.put("id", id);
                     //camera_feed.put("type", type);
                     //camera_feed.put("data_url", data_url);
                     //camera_feed.put("", );
                     //camera_feed.put("", );
                     //camera_feed.put("", );
                     //camera_feed.put("", );
-                    //resultsList.add(camera_feed);
+                    resultsList.add(camera_feed);
                 }
 
-                //txtJson = (TextView) findViewById(R.id.textView);
-                //HashMap<String, String> hashDetails = resultsList.get(0);
-                //txtJson.setText(hashDetails.get("id"));
-
+                //Intent intent  = new Intent(getApplicationContext(), MapsActivity.class);
+                //intent.putExtra("message", resultsList);
+                //startActivity(intent);
 
             } catch (JSONException e) {
                 e.printStackTrace();
