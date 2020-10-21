@@ -48,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
-    ArrayList<HashMap<String, String>> resultsList;
+    public ArrayList<HashMap<String, String>> resultsList;
     private LocationManager locationManager;
 
     //Intent intent = getIntent();
@@ -60,7 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         resultsList = new ArrayList<>();
 
-        new MapsActivity.JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X4rX7xAAACAA_8Ip&pageSize=100#format=json");
+        new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X4rX7xAAACAA_8Ip&pageSize=100#format=json");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -137,7 +137,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         protected String doInBackground(String... params) {
 
-
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
@@ -159,6 +158,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
 
                 }
+
+                try {
+                    JSONObject jsonObj = new JSONObject(String.valueOf(buffer));
+                    JSONArray result_array = jsonObj.getJSONArray("results");
+
+                    for(int i=0; i < result_array.length(); i++){
+                        JSONObject results_filtered = result_array.getJSONObject(i);
+                        JSONObject data_filtered = results_filtered.getJSONObject("data");
+                        String data_name = data_filtered.getString("name");
+                        String data_url = data_filtered.getString("url");
+                        String data_category = data_filtered.getString("category");
+                        String data_provider = data_filtered.getString("provider");
+                        String data_photovideo = data_filtered.getString("photovideo");
+                        String data_lat = data_filtered.getString("lat");
+                        String data_long = data_filtered.getString("long");
+
+                        //txtJson.setText(data_name);
+                        // tmp hash map for single camera feed
+                        HashMap<String, String> camera_feed = new HashMap<>();
+                        // add each child node to Hashmap key => value
+                        camera_feed.put("data_name", data_name);
+                        camera_feed.put("data_url", data_url);
+                        camera_feed.put("data_lat", data_lat);
+                        camera_feed.put("data_long", data_long);
+                        resultsList.add(camera_feed);
+                    }
+                    //Intent intent  = new Intent(getApplicationContext(), MapsActivity.class);
+                    //intent.putExtra("message", resultsList);
+                    //startActivity(intent);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
                 return buffer.toString();
 
@@ -188,63 +221,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (pd.isShowing()){
                 pd.dismiss();
             }
-
-            try {
-                JSONObject jsonObj = new JSONObject(result);;
-                JSONArray result_array = jsonObj.getJSONArray("results");
-
-                for(int i=0; i < result_array.length(); i++){
-
-                    JSONObject results_filtered = result_array.getJSONObject(i);
-                    String id = results_filtered.getString("id");
-                    String uid = results_filtered.getString("uid");
-                    String type = results_filtered.getString("type");
-                    String href = results_filtered.getString("href");
-                    String tags = results_filtered.getString("tags");
-                    String first_publication_date = results_filtered.getString("first_publication_date");
-                    String last_publication_date = results_filtered.getString("last_publication_date");
-                    String slugs = results_filtered.getString("slugs");
-                    String linked_documents = results_filtered.getString("linked_documents");
-                    String lang = results_filtered.getString("lang");
-                    String alternate_languages = results_filtered.getString("alternate_languages");
-
-                    // data node is JSON Object
-                    JSONObject data_filtered = results_filtered.getJSONObject("data");
-                    String data_name = data_filtered.getString("name");
-                    String data_url = data_filtered.getString("url");
-                    String data_category = data_filtered.getString("category");
-                    String data_provider = data_filtered.getString("provider");
-                    String data_photovideo = data_filtered.getString("photovideo");
-                    String data_lat = data_filtered.getString("lat");
-                    String data_long = data_filtered.getString("long");
-
-                    //txtJson.setText(data_name);
-                    // tmp hash map for single camera feed
-                    HashMap<String, String> camera_feed = new HashMap<>();
-                    // add each child node to Hashmap key => value
-                    camera_feed.put("id", id);
-                    //camera_feed.put("type", type);
-                    //camera_feed.put("data_url", data_url);
-                    //camera_feed.put("", );
-                    //camera_feed.put("", );
-                    //camera_feed.put("", );
-                    //camera_feed.put("", );
-                    resultsList.add(camera_feed);
-                }
-
-                //Intent intent  = new Intent(getApplicationContext(), MapsActivity.class);
-                //intent.putExtra("message", resultsList);
-                //startActivity(intent);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
         }
 
     }
 
+/*    public void jsonData(String results) {
 
+    }
+
+*/
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -264,6 +249,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LatLng akureyri = new LatLng(65.6833306, -18.0999996);
         mMap.addMarker(new MarkerOptions().position(akureyri).title("Akureyri"));
+        Log.d("2results", String.valueOf(resultsList));
+
+        for(int i=0; i < resultsList.size(); i++){
+            Log.d("1results: ", String.valueOf(resultsList.get(i)));
+        }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(reykjavik));
 
