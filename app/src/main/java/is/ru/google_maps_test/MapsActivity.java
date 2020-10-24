@@ -60,67 +60,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         resultsList = new ArrayList<>();
 
-        new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X4rX7xAAACAA_8Ip&pageSize=100#format=json");
+        new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X5BrfxAAACIAGIHl&pageSize=100#format=json");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                      int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    double latidute = location.getLatitude();
-                    double longidite = location.getLongitude();
-                    LatLng latLng = new LatLng(latidute,longidite);
-                    Geocoder geocoder = new Geocoder(getApplicationContext());
-
-                    try {
-                        List<Address> addressList = geocoder.getFromLocation(latidute, longidite,1);
-                        String str = addressList.get(0).getCountryName();
-                        mMap.addMarker(new MarkerOptions().position(latLng).title("Own location"));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((latLng), 5.2f));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-        } else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-                @Override
-                public void onLocationChanged(@NonNull Location location) {
-                    double latidute = location.getLatitude();
-                    double longidite = location.getLongitude();
-                    LatLng latLng = new LatLng(latidute,longidite);
-                    Geocoder geocoder = new Geocoder(getApplicationContext());
-
-                    try {
-                        List<Address > addressList = geocoder.getFromLocation(latidute, longidite,1);
-                        String str = addressList.get(0).getCountryName();
-                        mMap.addMarker(new MarkerOptions().position(latLng).title("Own location"));
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((latLng), 5.2f));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-            });
-        }
-
 
     }
 
@@ -242,20 +187,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        /*
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            // public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                      int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
 
+        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    double latidute = location.getLatitude();
+                    double longidite = location.getLongitude();
+                    LatLng latLng = new LatLng(latidute,longidite);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+
+                    try {
+                        List<Address> addressList = geocoder.getFromLocation(latidute, longidite,1);
+                        String str = addressList.get(0).getCountryName();
+                        mMap.addMarker(new MarkerOptions().position(latLng).title("Own location"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((latLng), 5.2f));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+        } else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    double latidute = location.getLatitude();
+                    double longidite = location.getLongitude();
+                    LatLng latLng = new LatLng(latidute,longidite);
+                    Geocoder geocoder = new Geocoder(getApplicationContext());
+
+                    try {
+                        List<Address > addressList = geocoder.getFromLocation(latidute, longidite,1);
+                        String str = addressList.get(0).getCountryName();
+                        mMap.addMarker(new MarkerOptions().position(latLng).title("Own location"));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom((latLng), 5.2f));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            });
+        }
+        */
         // Add a marker in Sydney and move the camera
-        LatLng reykjavik = new LatLng(64, -21);
-        mMap.addMarker(new MarkerOptions().position(reykjavik).title("Reykjavík"));
+        LatLng isafjordur = new LatLng(66.07475, -23.13498);
+        mMap.addMarker(new MarkerOptions().position(isafjordur).title("isafjordur"));
 
         LatLng akureyri = new LatLng(65.6833306, -18.0999996);
         mMap.addMarker(new MarkerOptions().position(akureyri).title("Akureyri"));
-        Log.d("2results", String.valueOf(resultsList));
 
         for(int i=0; i < resultsList.size(); i++){
             Log.d("1results: ", String.valueOf(resultsList.get(i)));
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(reykjavik));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(isafjordur));
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
