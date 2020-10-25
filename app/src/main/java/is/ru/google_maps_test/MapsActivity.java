@@ -1,24 +1,12 @@
 package is.ru.google_maps_test;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,8 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +29,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -52,10 +37,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
     public ArrayList<HashMap<String, String>> resultsList;
-    private LocationManager locationManager;
-
-    //Intent intent = getIntent();
-    //String str = intent.getStringExtra("message");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,6 +208,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public HashMap<String, String> getDataPoint(int i,   ArrayList<HashMap<String, String>> array) {
+        HashMap<String, String> camera_feed = array.get(i);
+        return camera_feed;
+    }
 
     /**
      * Manipulates the map once available.
@@ -236,11 +221,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     * @return
      */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Log.d("resultslist size: ", String.valueOf(resultsList.size()));
 
         // Add a marker in Sydney and move the camera
         //LatLng isafjordur = new LatLng(66.07475, -23.13498);
@@ -249,7 +235,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //mMap.addMarker(new MarkerOptions().position(akureyri).title("Akureyri"));
 
         for(int i=0; i < resultsList.size(); i++){
-            HashMap<String, String> camera_feed = resultsList.get(i);
+            HashMap<String, String> camera_feed = getDataPoint(i, resultsList);
+            Log.d("camera0", String.valueOf(camera_feed));
             String data_name = camera_feed.get("data_name");
             String data_url = camera_feed.get("data_url");
             String data_lat = camera_feed.get("data_lat");
