@@ -63,7 +63,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         resultsList = new ArrayList<>();
 
+        // Uncomment code below when working with JSON API
         //new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X5BrfxAAACIAGIHl&pageSize=100#format=json");
+
+        //get data from json file
+        getJsonData();
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        getMapData();
+
+    }
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("iceland-now-json.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public void getJsonData() {
         try {
             JSONObject jsonObj = new JSONObject(loadJSONFromAsset());
             JSONArray result_array = jsonObj.getJSONArray("results");
@@ -92,32 +118,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+    public void getMapData() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-    }
-
-    public void updateResponseList(ArrayList<HashMap<String, String>> arr) {
-        resultsList = arr;
-    }
-
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getAssets().open("iceland-now-json.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
     }
 
     public class JsonTask extends AsyncTask<String, String, String> {
@@ -180,7 +186,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         camera_feed.put("data_long", data_long);
                         camera_feed_results.add(camera_feed);
                     }
-                    updateResponseList(camera_feed_results);
                     //Intent intent  = new Intent(getApplicationContext(), MapsActivity.class);
                     //intent.putExtra("message", resultsList);
                     //startActivity(intent);
@@ -222,11 +227,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-/*    public void jsonData(String results) {
 
-    }
-
-*/
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
