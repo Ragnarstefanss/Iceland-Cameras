@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,19 +35,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
-    public ArrayList<HashMap<String, String>> resultsList;
+    public ArrayList<HashMap<String, String>> resultsList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        resultsList = new ArrayList<>();
-
         // Uncomment code below when working with JSON API
         //new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X5BrfxAAACIAGIHl&pageSize=100#format=json");
 
         //get data from json file
-        getJsonData();
+        String file_data = loadJSONFromAsset();
+        resultsList = getJsonData(file_data, resultsList);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getMapData();
 
@@ -70,9 +68,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return json;
     }
 
-    public void getJsonData() {
+
+    public ArrayList<HashMap<String, String>> getJsonData(String file_data, ArrayList<HashMap<String, String>> results_list) {
         try {
-            JSONObject jsonObj = new JSONObject(loadJSONFromAsset());
+            JSONObject jsonObj = new JSONObject(file_data);
             JSONArray result_array = jsonObj.getJSONArray("results");
             ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
             for(int i=0; i < result_array.length(); i++){
@@ -94,11 +93,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 camera_feed.put("data_url", data_url);
                 camera_feed.put("data_lat", data_lat);
                 camera_feed.put("data_long", data_long);
-                resultsList.add(camera_feed);
+                results_list.add(camera_feed);
             }
+            return results_list;
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void getMapData() {
@@ -138,8 +139,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line+"\n");
-                    Log.d("Response: ", "> " + line);   //here u ll get whole response...... :-)
-
                 }
 
                 try {
@@ -167,9 +166,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         camera_feed.put("data_long", data_long);
                         camera_feed_results.add(camera_feed);
                     }
-                    //Intent intent  = new Intent(getApplicationContext(), MapsActivity.class);
-                    //intent.putExtra("message", resultsList);
-                    //startActivity(intent);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -224,6 +220,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @return
      */
 
+    public int sizeOfResultsList() {
+        return resultsList.size();
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -236,7 +236,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         for(int i=0; i < resultsList.size(); i++){
             HashMap<String, String> camera_feed = getDataPoint(i, resultsList);
-            Log.d("camera0", String.valueOf(camera_feed));
             String data_name = camera_feed.get("data_name");
             String data_url = camera_feed.get("data_url");
             String data_lat = camera_feed.get("data_lat");
@@ -244,7 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             double i_lat = Double.valueOf(data_lat);
             double i_long = Double.valueOf(data_long);
-            //Log.d("1results: ", String.valueOf(data_name));
+
             LatLng i_position = new LatLng(i_lat, i_long);
             mMap.addMarker(new MarkerOptions().position(i_position).title(data_name));
 
