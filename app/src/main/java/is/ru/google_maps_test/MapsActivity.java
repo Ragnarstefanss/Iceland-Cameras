@@ -97,6 +97,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 camera_feed.put("data_url", data_url);
                 camera_feed.put("data_lat", data_lat);
                 camera_feed.put("data_long", data_long);
+                camera_feed.put("data_category", data_category);
                 results_list.add(camera_feed);
             }
             return results_list;
@@ -168,6 +169,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         camera_feed.put("data_url", data_url);
                         camera_feed.put("data_lat", data_lat);
                         camera_feed.put("data_long", data_long);
+                        camera_feed.put("data_category", data_category);
                         camera_feed_results.add(camera_feed);
                     }
 
@@ -232,24 +234,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        //LatLng isafjordur = new LatLng(66.07475, -23.13498);
-        //mMap.addMarker(new MarkerOptions().position(isafjordur).title("isafjordur"));
-        //LatLng akureyri = new LatLng(65.6833306, -18.0999996);
-        //mMap.addMarker(new MarkerOptions().position(akureyri).title("Akureyri"));
-
         for(int i=0; i < resultsList.size(); i++){
             HashMap<String, String> camera_feed = getDataPoint(i, resultsList);
             String data_name = camera_feed.get("data_name");
             String data_url = camera_feed.get("data_url");
             String data_lat = camera_feed.get("data_lat");
             String data_long = camera_feed.get("data_long");
+            String data_category = camera_feed.get("data_category");
+
 
             double i_lat = Double.valueOf(data_lat);
             double i_long = Double.valueOf(data_long);
 
             LatLng i_position = new LatLng(i_lat, i_long);
-            mMap.addMarker(new MarkerOptions().position(i_position).title(data_name));
+            Marker markerX = mMap.addMarker(new MarkerOptions().position(i_position).title(data_name).snippet(data_category.toLowerCase()));
+            markerX.setTag (data_url);
 
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -257,7 +256,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //String placeID = mMarkerMap.get(marker.getId());
                     //String placeName = marker.getTitle();
                     Intent intent = new Intent(getApplicationContext(), WebView_camera.class);
-                    intent.putExtra("data_url", data_url);
+                    intent.putExtra("data_url", (String) marker.getTag());
                     //intent.putExtra(PLACE_ID, placeID);
                     startActivity(intent);
                     return false;
@@ -266,11 +265,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         LatLng iceland = new LatLng(64.9312762, -19.0211697);
-   //     mMap.moveCamera(CameraUpdateFactory.newLatLng(iceland));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(iceland, 5.5f));
 
-        ///mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom - 3.5f));
-        //showMyLocation(mMap);
+        showMyLocation(mMap);
 
     } //END OF  public void onMapReady(GoogleMap googleMap)
 
@@ -284,7 +281,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)){
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }else {
+                ActivityCompat.requestPermissions(MapsActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+            }
+            //return;
         }
         mMap.setMyLocationEnabled(true);
     }
