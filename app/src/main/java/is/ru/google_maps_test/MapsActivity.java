@@ -1,12 +1,16 @@
 package is.ru.google_maps_test;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -74,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             JSONObject jsonObj = new JSONObject(file_data);
             JSONArray result_array = jsonObj.getJSONArray("results");
             ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
-            for(int i=0; i < result_array.length(); i++){
+            for (int i = 0; i < result_array.length(); i++) {
                 JSONObject results_filtered = result_array.getJSONObject(i);
                 JSONObject data_filtered = results_filtered.getJSONObject("data");
                 String data_name = data_filtered.getString("name");
@@ -138,14 +142,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String line = "";
 
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line+"\n");
+                    buffer.append(line + "\n");
                 }
 
                 try {
                     JSONObject jsonObj = new JSONObject(String.valueOf(buffer));
                     JSONArray result_array = jsonObj.getJSONArray("results");
                     ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
-                    for(int i=0; i < result_array.length(); i++){
+                    for (int i = 0; i < result_array.length(); i++) {
                         JSONObject results_filtered = result_array.getJSONObject(i);
                         JSONObject data_filtered = results_filtered.getJSONObject("data");
                         String data_name = data_filtered.getString("name");
@@ -197,14 +201,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (pd.isShowing()){
+            if (pd.isShowing()) {
                 pd.dismiss();
             }
         }
 
     }
 
-    public HashMap<String, String> getDataPoint(int i,   ArrayList<HashMap<String, String>> array) {
+    public HashMap<String, String> getDataPoint(int i, ArrayList<HashMap<String, String>> array) {
         HashMap<String, String> camera_feed = array.get(i);
         return camera_feed;
     }
@@ -262,9 +266,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         LatLng iceland = new LatLng(64.9312762, -19.0211697);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(iceland));
+   //     mMap.moveCamera(CameraUpdateFactory.newLatLng(iceland));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(iceland, 5.5f));
 
-
+        ///mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom - 3.5f));
+        //showMyLocation(mMap);
 
     } //END OF  public void onMapReady(GoogleMap googleMap)
+
+    public void showMyLocation (GoogleMap mMap)
+    {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
 }
