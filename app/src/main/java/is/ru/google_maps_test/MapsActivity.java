@@ -10,11 +10,11 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,6 +44,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //SSG: Ef við viljum setja þetta í landscape getum við smellt þessu inn
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
         setContentView(R.layout.activity_maps);
         // Uncomment code below when working with JSON API
         //new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X5BrfxAAACIAGIHl&pageSize=100#format=json");
@@ -232,8 +236,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        renderCameras (googleMap);
 
+
+        LatLng iceland = new LatLng(64.9312762, -19.0211697);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(iceland, 5.5f));
+
+        showMyLocation(googleMap);
+
+    } //END OF  public void onMapReady(GoogleMap googleMap)
+
+    public void renderCameras (GoogleMap googleMap)
+    {
         for(int i=0; i < resultsList.size(); i++){
             HashMap<String, String> camera_feed = getDataPoint(i, resultsList);
             String data_name = camera_feed.get("data_name");
@@ -247,10 +261,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double i_long = Double.valueOf(data_long);
 
             LatLng i_position = new LatLng(i_lat, i_long);
-            Marker markerX = mMap.addMarker(new MarkerOptions().position(i_position).title(data_name).snippet(data_category.toLowerCase()));
-            markerX.setTag (data_url);
+            //implement filter - will get input from filter
+            //if (data_category.equalsIgnoreCase("LANDMARK")) {
+                Marker markerX = googleMap.addMarker(new MarkerOptions().position(i_position).title(data_name).snippet(data_category.toLowerCase()));
+                //markerX.setIcon (new BitmapDescriptor());
+                markerX.setTag(data_url);
+            //}
 
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     //String placeID = mMarkerMap.get(marker.getId());
@@ -264,13 +282,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
         }
-        LatLng iceland = new LatLng(64.9312762, -19.0211697);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(iceland, 5.5f));
-
-        showMyLocation(mMap);
-
-    } //END OF  public void onMapReady(GoogleMap googleMap)
-
+    }
     public void showMyLocation (GoogleMap mMap)
     {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
