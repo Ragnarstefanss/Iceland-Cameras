@@ -40,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
     public ArrayList<HashMap<String, String>> resultsList = new ArrayList<>();
+    String filter = "LANDMARK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,10 +235,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return resultsList.size();
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         renderCameras (googleMap);
-
 
         LatLng iceland = new LatLng(64.9312762, -19.0211697);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(iceland, 5.5f));
@@ -246,10 +247,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     } //END OF  public void onMapReady(GoogleMap googleMap)
 
+
+    public ArrayList<HashMap<String, String>> filterMap(ArrayList<HashMap<String, String>> array, String array_filter) {
+
+        ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
+
+        for (int i = 0; i < array.size(); i++) {
+            HashMap<String, String> camera_feed = getDataPoint(i, array);
+            String data_name = camera_feed.get("data_name");
+            String data_url = camera_feed.get("data_url");
+            String data_lat = camera_feed.get("data_lat");
+            String data_long = camera_feed.get("data_long");
+            String data_category = camera_feed.get("data_category");
+
+            if (array_filter != "ALL") {
+                if (data_category.equalsIgnoreCase(array_filter)) {
+                    HashMap<String, String> filtered_category = new HashMap<>();
+                    filtered_category.put("data_name", data_name);
+                    filtered_category.put("data_url", data_url);
+                    filtered_category.put("data_lat", data_lat);
+                    filtered_category.put("data_long", data_long);
+                    camera_feed.put("data_category", data_category);
+                    camera_feed_results.add(camera_feed);
+                }
+            }
+            else {
+                HashMap<String, String> filtered_category = new HashMap<>();
+                filtered_category.put("data_name", data_name);
+                filtered_category.put("data_url", data_url);
+                filtered_category.put("data_lat", data_lat);
+                filtered_category.put("data_long", data_long);
+                camera_feed.put("data_category", data_category);
+                camera_feed_results.add(camera_feed);
+            }
+
+        }
+
+        return camera_feed_results;
+    }
+
+
     public void renderCameras (GoogleMap googleMap)
     {
-        for(int i=0; i < resultsList.size(); i++){
-            HashMap<String, String> camera_feed = getDataPoint(i, resultsList);
+        ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, "HARBOR");
+        // LANDMARK  HARBOR  ROAD  TOWN
+
+
+        for(int i=0; i < filteredList.size(); i++){
+            HashMap<String, String> camera_feed = getDataPoint(i, filteredList);
             String data_name = camera_feed.get("data_name");
             String data_url = camera_feed.get("data_url");
             String data_lat = camera_feed.get("data_lat");
