@@ -9,6 +9,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ExpandableListAdapter;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,13 +38,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, FilterDialog.FilterDialogListener {
 
     private GoogleMap mMap;
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
     public ArrayList<HashMap<String, String>> resultsList = new ArrayList<>();
     String filter = "LANDMARK";
+    Button button;
+
+    private TextView textViewUsername;
+    private TextView textViewPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +66,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         resultsList = getJsonData(file_data, resultsList);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getMapData();
+        button = (Button) findViewById(R.id.filter_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDialog();
+            }
+        });
 
+    }
+
+    public void openDialog() {
+        FilterDialog filterDialog = new FilterDialog();
+        filterDialog.show(getSupportFragmentManager(), "filter dialog");
     }
 
     public String loadJSONFromAsset() {
@@ -290,8 +310,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void renderCameras (GoogleMap googleMap)
     {
         ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, "HARBOR");
-        // LANDMARK  HARBOR  ROAD  TOWN
-
+        // LANDMARK  HARBOR  ROAD  TOWN  MOUNTAIN ....
 
         for(int i=0; i < filteredList.size(); i++){
             HashMap<String, String> camera_feed = getDataPoint(i, filteredList);
@@ -350,5 +369,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //return;
         }
         mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void applyTexts(String username, String password) {
+        textViewUsername.setText(username);
+        textViewPassword.setText(password);
     }
 }
