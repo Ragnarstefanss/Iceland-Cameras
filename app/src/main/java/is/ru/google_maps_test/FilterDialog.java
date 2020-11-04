@@ -7,13 +7,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 public class FilterDialog extends AppCompatDialogFragment {
-    private EditText editTextUsername;
-    private EditText editTextPassword;
+    private Spinner spinnerValue;
     private FilterDialogListener listener;
 
     @Override
@@ -34,13 +34,14 @@ public class FilterDialog extends AppCompatDialogFragment {
                 .setPositiveButton("confirm", new DialogInterface.OnClickListener()  {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String username = editTextUsername.getText().toString();
-                        String password = editTextPassword.getText().toString();
-                        listener.applyTexts(username, password);
+                        //String username = editTextUsername.getText().toString();
+                        //listener.applyTexts(username);
+
+                        String spin = spinnerValue.getSelectedItem().toString();
+                        listener.applyTexts(spin);
                     }
                 });
-        editTextUsername = view.findViewById(R.id.edit_username);
-        editTextPassword = view.findViewById(R.id.edit_password);
+        spinnerValue = view.findViewById(R.id.spinner1);
         return builder.create();
     }
 
@@ -56,6 +57,6 @@ public class FilterDialog extends AppCompatDialogFragment {
     }
 
     public interface FilterDialogListener {
-        void applyTexts(String username, String password);
+        void applyTexts(String spin);
     }
 }

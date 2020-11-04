@@ -44,11 +44,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
     public ArrayList<HashMap<String, String>> resultsList = new ArrayList<>();
-    String filter = "LANDMARK";
+    String filter_choice = "ALL";
     Button button;
 
-    private TextView textViewUsername;
-    private TextView textViewPassword;
+    private TextView textViewfilterChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -309,7 +308,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void renderCameras (GoogleMap googleMap)
     {
-        ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, "HARBOR");
+        ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, filter_choice);
         // LANDMARK  HARBOR  ROAD  TOWN  MOUNTAIN ....
 
         for(int i=0; i < filteredList.size(); i++){
@@ -372,8 +371,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void applyTexts(String username, String password) {
-        textViewUsername.setText(username);
-        textViewPassword.setText(password);
+    public void applyTexts(String spinner) {
+        textViewfilterChoice = spinner;
     }
 }

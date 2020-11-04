@@ -17,4 +17,16 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+
+    <string name="filter_prompt">Choose category to filter by</string>
+    <string-array name="filter_categories">
+        <item>ALL</item>
+        <item>HARBOR</item>
+        <item>LANDMARK</item>
+        <item>MOUNTAIN</item>
+        <item>ROAD</item>
+        <item>TOWN</item>
+        <item>WILDLIFE</item>
+    </string-array>
 </resources>
