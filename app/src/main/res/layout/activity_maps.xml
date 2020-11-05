@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MapsActivity" />
-
+    <!--
     <Button
         android:id="@+id/filter_button"
         android:layout_width="wrap_content"
@@ -24,5 +24,12 @@
         android:layout_margin="5dp"
         android:text="Filter view"
         android:textColor="#ffffff" />
+    -->
+    <Spinner
+        android:id="@+id/spinner2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/filter_categories"
+        android:prompt="@string/filter_prompt" />
 
 </RelativeLayout>
