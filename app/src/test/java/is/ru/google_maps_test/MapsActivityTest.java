@@ -38,4 +38,13 @@ public class MapsActivityTest {
         assertEquals(compare_true, camera_feed);
         assertNotEquals(compare_false, camera_feed);
     }
+
+    // TODO: Make a check that looks at the type of camera feed (photo/video) and gives a pass if correct icon
+
+    // TODO: Make a check if filtering works
+
+    //TODO: GPS points in correct lacation -> lat and long
+
+    //TODO: Filtering on for example "HARBOR" does  "lat": 65.979176,  and "long": -18.379154  exist on map (ANSWER should be yes)
+    //  -> then change filter to "MOUNTAIN" does the same points still exists (SHOULD NOT exist)
 }

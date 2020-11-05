@@ -9,6 +9,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ExpandableListAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,13 +41,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, FilterDialog.FilterDialogListener {
 
     private GoogleMap mMap;
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
     public ArrayList<HashMap<String, String>> resultsList = new ArrayList<>();
-    String filter = "LANDMARK";
+    String filter_choice = "ALL";
+    Button button;
+    Spinner spinner;
+
+    private TextView textViewfilterChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +63,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         // Uncomment code below when working with JSON API
         //new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X5BrfxAAACIAGIHl&pageSize=100#format=json");
-
+        //textViewfilterChoice.setText(filter_choice);
         //get data from json file
         String file_data = loadJSONFromAsset();
         resultsList = getJsonData(file_data, resultsList);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getMapData();
 
+        spinner = (Spinner) findViewById(R.id.spinner2);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                filter_choice = spinner.getSelectedItem().toString();;
+                getMapData();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+        //button = (Button) findViewById(R.id.filter_button);
+        //button.setOnClickListener(new View.OnClickListener() {
+            //@Override
+            //public void onClick(View view) {
+                //openDialog();
+            //}
+        //});
+
+    }
+
+    public void openDialog() {
+        FilterDialog filterDialog = new FilterDialog();
+        filterDialog.show(getSupportFragmentManager(), "filter dialog");
     }
 
     public String loadJSONFromAsset() {
@@ -238,6 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        clearMap(googleMap);
         renderCameras (googleMap);
 
         LatLng iceland = new LatLng(64.9312762, -19.0211697);
@@ -251,7 +291,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public ArrayList<HashMap<String, String>> filterMap(ArrayList<HashMap<String, String>> array, String array_filter) {
 
         ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
-
         for (int i = 0; i < array.size(); i++) {
             HashMap<String, String> camera_feed = getDataPoint(i, array);
             String data_name = camera_feed.get("data_name");
@@ -260,7 +299,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String data_long = camera_feed.get("data_long");
             String data_category = camera_feed.get("data_category");
 
-            if (array_filter != "ALL") {
+            if (!array_filter.equals("ALL")) {
+                Log.d(array_filter, "results are not all");
                 if (data_category.equalsIgnoreCase(array_filter)) {
                     HashMap<String, String> filtered_category = new HashMap<>();
                     filtered_category.put("data_name", data_name);
@@ -272,6 +312,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
             else {
+
+                Log.d(array_filter, "results are all");
                 HashMap<String, String> filtered_category = new HashMap<>();
                 filtered_category.put("data_name", data_name);
                 filtered_category.put("data_url", data_url);
@@ -286,12 +328,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return camera_feed_results;
     }
 
+    public void clearMap(GoogleMap  googleMap) {
+        googleMap.clear();
+
+    }
 
     public void renderCameras (GoogleMap googleMap)
     {
-        ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, "HARBOR");
-        // LANDMARK  HARBOR  ROAD  TOWN
-
+        //Log.d(filter_choice, "filterchoice: ");
+        //Log.d(String.valueOf(textViewfilterChoice), "textview");
+        ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, filter_choice);
+        // LANDMARK  HARBOR  ROAD  TOWN  MOUNTAIN ....
 
         for(int i=0; i < filteredList.size(); i++){
             HashMap<String, String> camera_feed = getDataPoint(i, filteredList);
@@ -350,5 +397,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //return;
         }
         mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void applyTexts(String spinner) {
+        //filter_choice = spinner;
+        //textViewfilterChoice.setText(spinner);
     }
 }
