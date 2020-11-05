@@ -25,9 +25,8 @@ public class WebView_camera extends AppCompatActivity {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        //webSettings.setDefaultZoom( (WebSettings.ZoomDensity.CLOSE));
-        //webSettings.setDefaultZoom(new WebSettings.ZoomDensity());
-
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
     }
 
     @Override
