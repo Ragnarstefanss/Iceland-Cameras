@@ -20,6 +20,7 @@ public class WebView_camera extends AppCompatActivity {
 
         Intent intent = getIntent();
         String data_url = intent.getStringExtra("data_url");
+        WebView_camera.this.setTitle(intent.getStringExtra("data_name"));
 
         webView.loadUrl(data_url);
 

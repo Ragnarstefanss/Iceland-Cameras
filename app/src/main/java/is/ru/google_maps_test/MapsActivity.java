@@ -412,6 +412,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //String placeName = marker.getTitle();
                     Intent intent = new Intent(getApplicationContext(), WebView_camera.class);
                     intent.putExtra("data_url", (String) marker.getTag());
+                    intent.putExtra("data_name", (String) marker.getTitle());
                     //intent.putExtra(PLACE_ID, placeID);
                     startActivity(intent);
                     return false;
