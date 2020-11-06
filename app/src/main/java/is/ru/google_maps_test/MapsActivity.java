@@ -84,13 +84,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         });
-        //button = (Button) findViewById(R.id.filter_button);
-        //button.setOnClickListener(new View.OnClickListener() {
-            //@Override
-            //public void onClick(View view) {
-                //openDialog();
-            //}
-        //});
 
     }
 
@@ -359,7 +352,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String data_category = camera_feed.get("data_category");
 
             if (!array_filter.equals("ALL")) {
-                Log.d(array_filter, "results are not all");
                 if (data_category.equalsIgnoreCase(array_filter)) {
                     HashMap<String, String> filtered_category = new HashMap<>();
                     filtered_category.put("data_name", data_name);
@@ -371,8 +363,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
             else {
-
-                Log.d(array_filter, "results are all");
                 HashMap<String, String> filtered_category = new HashMap<>();
                 filtered_category.put("data_name", data_name);
                 filtered_category.put("data_url", data_url);
