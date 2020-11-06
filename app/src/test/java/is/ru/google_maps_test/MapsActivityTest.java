@@ -38,10 +38,68 @@ public class MapsActivityTest {
 
     // TODO: Make a check that looks at the type of camera feed (photo/video) and gives a pass if correct icon
 
-    // TODO: Make a check if filtering works
-
     //TODO: GPS points in correct lacation -> lat and long
+    @Test
+    public void checkGPSpoints(){
+        MapsActivity activity = new MapsActivity();
+        ArrayList<HashMap<String, String>> webcamList = new ArrayList<>();
+        
+        // Create three different places
+        HashMap<String, String> place_one = new HashMap<>();
+        place_one.put("data_name", "Tindastóll");
+        place_one.put("data_url", "https://skidi.gunnartr.net/skitindastoll.jpg");
+        place_one.put("data_lat", "65.8");
+        place_one.put("data_long", "-19.7166667");
+        place_one.put("data_category", "MOUNTAIN");
+        webcamList.add(place_one);
 
+        HashMap<String, String> place_two = new HashMap<>();
+        place_two.put("data_name", "Hveravellir");
+        place_two.put("data_url", "http://193.4.144.154/cgi-bin/viewer/video.jpg?resolution=1400x1000&t=0.25348094508700614");
+        place_two.put("data_lat", "64.819");
+        place_two.put("data_long", "-19.672");
+        place_two.put("data_category", "LANDMARK");
+        webcamList.add(place_two);
+
+        HashMap<String, String> place_three = new HashMap<>();
+        place_three.put("data_name", "Hornafjörður");
+        place_three.put("data_url", "http://213.167.138.133:3001/axis-cgi/jpg/image.cgi?rand=0.5156160063055386");
+        place_three.put("data_lat", "64.250486");
+        place_three.put("data_long", "-15.191914");
+        place_three.put("data_category", "MOUNTAIN");
+        webcamList.add(place_three);
+
+        boolean tindastoll_correct_gps = false;
+        boolean hveravellir_correct_gps = false;
+        boolean hornafjordur_correct_gps = false;
+
+
+        for(int i=0; i < webcamList.size(); i++){
+            HashMap<String, String> camera_feed = activity.getDataPoint(i, webcamList);
+            String data_name = camera_feed.get("data_name");
+            String data_lat = camera_feed.get("data_lat");
+            String data_long = camera_feed.get("data_long");
+
+            if(data_name == "Tindastóll"){
+                if(data_lat == "65.8" && data_long == "-19.7166667") {
+                    tindastoll_correct_gps = true;
+                }
+            }
+            else if(data_name == "Hveravellir"){
+                if(data_lat == "64.819" && data_long == "-19.672") {
+                    hveravellir_correct_gps = true;
+                }
+            }
+            else if(data_name == "Hornafjörður"){
+                if(data_lat == "64.250486" && data_long == "-15.191914") {
+                    hornafjordur_correct_gps = true;
+                }
+            }
+        }
+        assertEquals(tindastoll_correct_gps, true);
+        assertEquals(hveravellir_correct_gps, true);
+        assertEquals(hornafjordur_correct_gps, true);
+    }
 
     // Filtering on for example "MOUNTAIN" does  "lat": 64.250486,  and "long": -15.191914  exist on map (ANSWER should be yes)
     ////  -> then change filter to "HARBOR" does the same points still exists (SHOULD NOT exist)
@@ -97,7 +155,5 @@ public class MapsActivityTest {
         
         assertEquals(contains_lat_long, true);
         assertEquals(sum_of_filtered_mountains, count_actual_filtered_mountains);
-
-
     }
 }
