@@ -28,7 +28,7 @@ public class WebView_camera extends AppCompatActivity {
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
     }
-
+    
     @Override
     public void onBackPressed() {
         if(webView.canGoBack()) {

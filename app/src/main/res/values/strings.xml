@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Google-maps-test</string>
+    <string name="app_name">IcelandNow</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_filters">FiltersActivity</string>
 
