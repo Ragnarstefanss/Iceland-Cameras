@@ -28,6 +28,7 @@
     <Spinner
         android:id="@+id/spinner2"
         android:layout_width="match_parent"
+        android:background="#FFFFFF"
         android:layout_height="wrap_content"
         android:entries="@array/filter_categories"
         android:prompt="@string/filter_prompt" />
