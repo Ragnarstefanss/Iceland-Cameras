@@ -8,3 +8,8 @@ The goal of the app was to display different camera feeds all around Iceland wit
 - Road
 - Town
 - Wild Life
+
+## Demo
+
+### Splash Screen
+![Alt text](demo/1_Splash_Screen.png?raw=true "Splash Screen")
