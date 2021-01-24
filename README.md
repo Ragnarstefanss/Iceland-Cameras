@@ -12,4 +12,4 @@ The goal of the app was to display different camera feeds all around Iceland wit
 ## Demo
 
 ### Splash Screen
-![Alt text](demo/1_Splash_Screen.png?raw=true width="50%" "Splash Screen")
+![Alt text](demo/1_Splash_Screen.png?raw=true "Splash Screen")
