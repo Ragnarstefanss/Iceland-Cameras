@@ -46,7 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     ProgressDialog pd;
     Map<String, String> mMarkerMap = new HashMap<>();
-    public ArrayList<HashMap<String, String>> resultsList = new ArrayList<>();
+    public ArrayList<HashMap<String, String>> webcamList = new ArrayList<>();
     String filter_choice = "ALL";
     Button button;
     Spinner spinner;
@@ -61,12 +61,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         setContentView(R.layout.activity_maps);
-        // Uncomment code below when working with JSON API
-        //new JsonTask().execute("https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=X5BrfxAAACIAGIHl&pageSize=100#format=json");
+        // Start background task to load JSON from API
+        new JsonTask().execute();
         //textViewfilterChoice.setText(filter_choice);
         //get data from json file
-        String file_data = loadJSONFromAsset();
-        resultsList = getJsonData(file_data, resultsList);
+        //tmp comment   String file_data = loadJSONFromAsset();
+        //webcamList = parseJsonData(file_data, webcamList);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getMapData();
 
@@ -74,7 +74,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // your code here
                 filter_choice = spinner.getSelectedItem().toString();;
                 getMapData();
             }
@@ -85,13 +84,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         });
-        //button = (Button) findViewById(R.id.filter_button);
-        //button.setOnClickListener(new View.OnClickListener() {
-            //@Override
-            //public void onClick(View view) {
-                //openDialog();
-            //}
-        //});
 
     }
 
@@ -116,12 +108,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return json;
     }
 
-
-    public ArrayList<HashMap<String, String>> getJsonData(String file_data, ArrayList<HashMap<String, String>> results_list) {
+    /**
+     * Parses JSON data from string to an array
+     */
+    public ArrayList<HashMap<String, String>> parseJsonData(String file_data, ArrayList<HashMap<String, String>> results_list) {
         try {
             JSONObject jsonObj = new JSONObject(file_data);
             JSONArray result_array = jsonObj.getJSONArray("results");
-            ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
+            //ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
             for (int i = 0; i < result_array.length(); i++) {
                 JSONObject results_filtered = result_array.getJSONObject(i);
                 JSONObject data_filtered = results_filtered.getJSONObject("data");
@@ -173,11 +167,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
-            try {
-                URL url = new URL(params[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
+            //Prismic.io requires data version ("ref") to be sent, get the latest so updates automaticly pop in
+            String masterRef = getMasterRef();
+            String apiURL = "https://icelandnow.cdn.prismic.io/api/v2/documents/search?ref=" + masterRef + "&pageSize=100#format=json";
 
+            try {
+                URL url = new URL(apiURL);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setInstanceFollowRedirects(true);
+                connection.connect();
 
                 InputStream stream = connection.getInputStream();
 
@@ -189,9 +187,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line + "\n");
                 }
-
+                String file_data = String.valueOf(buffer);
                 try {
-                    JSONObject jsonObj = new JSONObject(String.valueOf(buffer));
+                    JSONObject jsonObj = new JSONObject(file_data);
                     JSONArray result_array = jsonObj.getJSONArray("results");
                     ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
                     for (int i = 0; i < result_array.length(); i++) {
@@ -215,6 +213,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         camera_feed.put("data_long", data_long);
                         camera_feed.put("data_category", data_category);
                         camera_feed_results.add(camera_feed);
+                        webcamList.add(camera_feed);
                     }
 
                 } catch (JSONException e) {
@@ -247,10 +246,68 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
+            // ssg test
+            renderCameras(mMap);
             if (pd.isShowing()) {
                 pd.dismiss();
             }
         }
+
+        protected String getMasterRef() {
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL("https://icelandnow.cdn.prismic.io/api/v2");
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setInstanceFollowRedirects(true);
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+
+                reader = new BufferedReader(new InputStreamReader(stream));
+
+                StringBuffer buffer = new StringBuffer();
+                String line = "";
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+                String file_data = String.valueOf(buffer);
+                try {
+                    JSONObject jsonObj = new JSONObject(file_data);
+                    JSONArray result_array = jsonObj.getJSONArray("refs");
+                    ArrayList<HashMap<String, String>> camera_feed_results = new ArrayList<>();
+                    for (int i = 0; i < result_array.length(); i++) {
+                        JSONObject zz = result_array.getJSONObject(i);
+                        String theRef = zz.getString("ref");
+                        return theRef;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
 
     }
 
@@ -269,14 +326,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      * @return
      */
-
-    public int sizeOfResultsList() {
-        return resultsList.size();
-    }
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
         clearMap(googleMap);
         renderCameras (googleMap);
 
@@ -300,7 +352,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String data_category = camera_feed.get("data_category");
 
             if (!array_filter.equals("ALL")) {
-                Log.d(array_filter, "results are not all");
                 if (data_category.equalsIgnoreCase(array_filter)) {
                     HashMap<String, String> filtered_category = new HashMap<>();
                     filtered_category.put("data_name", data_name);
@@ -312,8 +363,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
             else {
-
-                Log.d(array_filter, "results are all");
                 HashMap<String, String> filtered_category = new HashMap<>();
                 filtered_category.put("data_name", data_name);
                 filtered_category.put("data_url", data_url);
@@ -337,7 +386,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         //Log.d(filter_choice, "filterchoice: ");
         //Log.d(String.valueOf(textViewfilterChoice), "textview");
-        ArrayList<HashMap<String, String>> filteredList = filterMap(resultsList, filter_choice);
+        ArrayList<HashMap<String, String>> filteredList = filterMap(webcamList, filter_choice);
         // LANDMARK  HARBOR  ROAD  TOWN  MOUNTAIN ....
 
         for(int i=0; i < filteredList.size(); i++){
@@ -353,12 +402,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double i_long = Double.valueOf(data_long);
 
             LatLng i_position = new LatLng(i_lat, i_long);
-            //implement filter - will get input from filter
-            //if (data_category.equalsIgnoreCase("LANDMARK")) {
-                Marker markerX = googleMap.addMarker(new MarkerOptions().position(i_position).title(data_name).snippet(data_category.toLowerCase()));
-                //markerX.setIcon (new BitmapDescriptor());
-                markerX.setTag(data_url);
-            //}
+            Marker markerX = googleMap.addMarker(new MarkerOptions().position(i_position).title(data_name).snippet(data_category.toLowerCase()));
+            markerX.setTag(data_url);
 
             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -367,6 +412,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //String placeName = marker.getTitle();
                     Intent intent = new Intent(getApplicationContext(), WebView_camera.class);
                     intent.putExtra("data_url", (String) marker.getTag());
+                    intent.putExtra("data_name", (String) marker.getTitle());
                     //intent.putExtra(PLACE_ID, placeID);
                     startActivity(intent);
                     return false;
@@ -404,4 +450,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //filter_choice = spinner;
         //textViewfilterChoice.setText(spinner);
     }
+
 }

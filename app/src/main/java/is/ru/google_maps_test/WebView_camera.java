@@ -20,16 +20,16 @@ public class WebView_camera extends AppCompatActivity {
 
         Intent intent = getIntent();
         String data_url = intent.getStringExtra("data_url");
+        WebView_camera.this.setTitle(intent.getStringExtra("data_name"));
 
         webView.loadUrl(data_url);
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        //webSettings.setDefaultZoom( (WebSettings.ZoomDensity.CLOSE));
-        //webSettings.setDefaultZoom(new WebSettings.ZoomDensity());
-
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
     }
-
+    
     @Override
     public void onBackPressed() {
         if(webView.canGoBack()) {
